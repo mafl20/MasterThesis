@@ -2,6 +2,6 @@ DCASE2025T2:
   ToyCar:
     Development:
       - https://zenodo.org/records/15097779/files/dev_ToyCar.zip
-  # ToyTrain:
-  #   Development:
-  #     - https://zenodo.org/records/15097779/files/dev_ToyTrain.zip
+  ToyTrain:
+    Development:
+      - https://zenodo.org/records/15097779/files/dev_ToyTrain.zip
