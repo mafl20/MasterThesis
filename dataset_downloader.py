@@ -77,22 +77,19 @@ class DatasetDownloader:
                     for url in urls: #iterate through URLs and build the target directory structure
                         target_directory = os.path.join(self.base_directory, challenge_name, machine_type, dataset_type)
                         self.download_and_extract(url, target_directory) #download and extract the dataset
+    
+    def download_datasets(self, yaml_file_path):
+        while True:
+            answer = input("Do you want to download the datasets? (yes/no): ").strip().lower()
+            if answer in ("yes", "no"):
+                break
+            print("Please enter 'yes' or 'no'.")
 
-
-
-while True:
-    answer = input("Do you want to download the datasets? (yes/no): ").strip().lower()
-    if answer in ("yes", "no"):
-        break
-    print("Please enter 'yes' or 'no'.")
-
-if answer == "yes":
-    try:
-        dataset_downloader = DatasetDownloader()
-        yaml_file_path = "datasets/path_files/download_paths_2025.yaml"
-        dataset_downloader.process_yaml(yaml_file_path)
-    except Exception as e:
-        print(f"An error occurred: {e}")
-else:
-    print("Exiting the program. No datasets were downloaded.")
-    quit()
+        if answer == "yes":
+            try:
+                self.process_yaml(yaml_file_path)
+            except Exception as e:
+                print(f"An error occurred: {e}")
+        else:
+            print("Exiting the program. No datasets were downloaded.")
+            return
