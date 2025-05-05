@@ -1,0 +1,11 @@
+#features
+--number_of_mels: 128
+--number_of_frames_to_concatenate: 5
+--frame_size_samples: 1024
+--hop_size_samples: 512
+
+#fit
+--batch_size: 256
+--epochs: 100
+--learning_rate: 0.001
+--shuffle: True
