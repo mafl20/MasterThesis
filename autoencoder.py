@@ -18,7 +18,7 @@ class Autoencoder(nn.Module):
             nn.BatchNorm1d(128),
             nn.ReLU(),
             nn.Linear(128, 8), #from hidden layer (128 features) to bottleneck layer (8 features)
-            nn.BatchNorm1d(128),
+            nn.BatchNorm1d(8),
             nn.ReLU(),
         )
         
@@ -38,3 +38,8 @@ class Autoencoder(nn.Module):
             nn.ReLU(),
             nn.Linear(128, 640), #output layer (640 features)
         )
+
+    def forward(self, x):
+        encoded = self.encoder(x)
+        decoded = self.decoder(encoded)
+        return decoded
