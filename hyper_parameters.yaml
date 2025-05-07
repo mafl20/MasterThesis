@@ -10,6 +10,6 @@ acoustic_features:
 
 training_parameters:
   batch_size: 256
-  epochs: 100
+  epochs: 10
   learning_rate: 0.001
   shuffle: True
