@@ -6,34 +6,50 @@ import numpy as np
 from audio_converter import AudioConverter
 
 class DataBundler:
-    def __init__(self):
+    def __init__(self, root_path="datasets/DCASE2025T2/Development"):
         print("\nData Loader Here!")
-        self.audio_converter = AudioConverter()
+        self.root_path = root_path
 
-    def load_dataset(self, dataset_path, percentage=1.0, shuffle=True):
-        audio_files = glob.glob(os.path.join(dataset_path, '*.wav')) #load all audio files in list
+
+    def load_dataset(self, inclusion_string=None, percentage=1.0, shuffle=True, as_input=True):
+        #audio_files = glob.glob(os.path.join(dataset_path, '*.wav')) #load all audio files in list
+
+        audio_files = []
+        for directory_path, _, filenames in os.walk(self.root_path):
+            if inclusion_string is None or inclusion_string in directory_path:
+                audio_files.extend(glob.glob(os.path.join(directory_path, '*.wav')))
 
         if shuffle:
             random.shuffle(audio_files)  # Shuffle the list if `shuffle` is True
+            print(f"Shuffled {len(audio_files)} files")
 
         number_of_files = len(audio_files) #get number of files in dataset
         files_to_process = int(percentage * number_of_files) #get number of files to process
         audio_files = audio_files[:files_to_process]
 
+        audio_converter = AudioConverter()
         all_input_features = []
+        all_clip_lengths = []
         filenames = []
         for i, file_path in enumerate(audio_files, 1):
             print(f"({i}/{files_to_process}) Processing '{os.path.basename(file_path)}'")
-            input_features = self.audio_converter.wav_to_input(file_path)
+            if as_input:
+                clip_lengths, input_features = audio_converter.wav_to_input(file_path)
+            else:
+                clip_lengths, input_features = audio_converter.wav_to_mel(file_path)
 
             all_input_features.append(input_features)
+            all_clip_lengths.append(clip_lengths)
             filenames.append(os.path.basename(file_path))
 
         dataset = np.vstack(all_input_features) #stack all input features into a single array
+        all_clip_lengths = np.array(all_clip_lengths)
         print(f"\nDone loading!")
         print(f"Length of dataset: {len(dataset)}\n")
 
-        return dataset, filenames
+        return all_clip_lengths, dataset, filenames
+
     
-# data_loader = DataLoader()
-# dataset = data_loader.load_dataset("datasets/DCASE2025T2/ToyCar/Development/ToyCar/train", 0.1)
+# data_bundler = DataBundler()
+# clip_lengths, dataset, filenames = data_bundler.load_dataset('train', 0.01, True, True)
+# print(clip_lengths)

@@ -8,8 +8,14 @@ acoustic_features:
   hop_size_seconds: 0.032
   hop_size_samples: 512
 
+dataset_parameters:
+  train_data_inclusion_string: 'train'
+  test_data_inclusion_string: 'test'
+  train_pct: 1
+  test_pct: .5
+
 training_parameters:
   batch_size: 256
-  epochs: 10
+  epochs: 100
   learning_rate: 0.001
   shuffle: True

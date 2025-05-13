@@ -71,12 +71,11 @@ class DatasetDownloader:
             data = yaml.safe_load(file)
 
         #> iterate through the YAML data hierarchy
-        for challenge_name, machines in data.items(): #iterate through challenges
-            for machine_type, datasets in machines.items(): #iterate through machine types
-                for dataset_type, urls in datasets.items(): #iterate through dataset types
-                    for url in urls: #iterate through URLs and build the target directory structure
-                        target_directory = os.path.join(self.base_directory, challenge_name, machine_type, dataset_type)
-                        self.download_and_extract(url, target_directory) #download and extract the dataset
+        for challenge_name, datasets in data.items(): #iterate through challenges
+            for dataset_type, urls in datasets.items(): #iterate through dataset types
+                for url in urls: #iterate through URLs and build the target directory structure
+                    target_directory = os.path.join(self.base_directory, challenge_name, dataset_type)
+                    self.download_and_extract(url, target_directory) #download and extract the dataset
     
     def download_datasets(self, yaml_file_path):
         while True:
