@@ -43,6 +43,6 @@ class Autoencoder(nn.Module):
         encoded = self.encoder(x)
         decoded = self.decoder(encoded)
 
-        print(f"Input vector: {x}")
+        #print(f"Input vector: {x}")
 
         return decoded

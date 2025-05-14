@@ -2,6 +2,7 @@ import os
 import glob
 import random
 import numpy as np
+from tqdm import tqdm
 
 from audio_converter import AudioConverter
 
@@ -12,8 +13,6 @@ class DataBundler:
 
 
     def load_dataset(self, inclusion_string=None, percentage=1.0, shuffle=True, as_input=True):
-        #audio_files = glob.glob(os.path.join(dataset_path, '*.wav')) #load all audio files in list
-
         audio_files = []
         for directory_path, _, filenames in os.walk(self.root_path):
             if inclusion_string is None or inclusion_string in directory_path:
@@ -21,7 +20,7 @@ class DataBundler:
 
         if shuffle:
             random.shuffle(audio_files)  # Shuffle the list if `shuffle` is True
-            print(f"Shuffled {len(audio_files)} files")
+            #print(f"Shuffled {len(audio_files)} files")
 
         number_of_files = len(audio_files) #get number of files in dataset
         files_to_process = int(percentage * number_of_files) #get number of files to process
@@ -31,8 +30,9 @@ class DataBundler:
         all_input_features = []
         all_clip_lengths = []
         filenames = []
-        for i, file_path in enumerate(audio_files, 1):
-            print(f"({i}/{files_to_process}) Processing '{os.path.basename(file_path)}'")
+
+        for i, file_path in enumerate(tqdm(audio_files, desc="Processing audio files", unit="file"), 1):
+            #print(f"({i}/{files_to_process}) Processing '{os.path.basename(file_path)}'")
             if as_input:
                 clip_lengths, input_features = audio_converter.wav_to_input(file_path)
             else:
