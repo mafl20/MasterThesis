@@ -50,7 +50,7 @@ class AudioConverter:
         )
         mel_audio = librosa.power_to_db(mel_audio, ref=np.max) #convert to decibels
 
-        return mel_audio
+        return mel_audio.shape[1], mel_audio
     
 
     def mel_to_input(self, mel_audio):
@@ -68,7 +68,7 @@ class AudioConverter:
     
 
     def wav_to_input(self, wav_path):
-        mel_audio = self.wav_to_mel(wav_path)
+        lengths, mel_audio = self.wav_to_mel(wav_path)
         return self.mel_to_input(mel_audio)
         
     
@@ -92,13 +92,14 @@ class AudioConverter:
         return mel_to_linear
     
     def output_to_wav(self, output):
-        mel_audio = self.output_to_mel(output)
+        lengths, mel_audio = self.output_to_mel(output)
         return self.mel_to_wav(mel_audio)
 
 
 audio_converter = AudioConverter()
-clip_length, audio = audio_converter.wav_to_input("datasets/DCASE2025T2/Development/ToyCar/train/section_00_source_train_normal_0002_car_B1_spd_31V_mic_1.wav")
-# print(clip_length)
+#clip_length, audio = audio_converter.wav_to_input("datasets/DCASE2025T2/Development/ToyCar/train/section_00_source_train_normal_0002_car_B1_spd_31V_mic_1.wav")
+clip_length, audio = audio_converter.wav_to_mel("datasets/DCASE2025T2/Development/ToyCar/train/section_00_source_train_normal_0002_car_B1_spd_31V_mic_1.wav")
+print(clip_length)
 
 
 # output_path = f"reconstructions/RECONSTRUCTED_section_00_source_train_normal_0001_car_B1_spd_31V_mic_1.wav"
