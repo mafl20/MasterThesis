@@ -7,13 +7,15 @@ from torch.utils.data import DataLoader
 
 class AudioConverter:
     def __init__(self):
-        print("Audio Converter Here!")
+        # print("Audio Converter Here!")
 
         self.hyper_parameters = self.load_hyper_parameters()
 
         #> setup general acoustic features
         self.acoustic_features = self.hyper_parameters['acoustic_features']
         self.frame_size_seconds = self.acoustic_features['frame_size_seconds']
+        self.frame_size_samples = self.acoustic_features['frame_size_samples']
+        self.hop_size_samples = self.acoustic_features['hop_size_samples']
         self.number_of_mels = self.acoustic_features['number_of_mels']
 
         self.training_parameters = self.hyper_parameters['training_parameters']
@@ -52,6 +54,30 @@ class AudioConverter:
 
         return mel_audio.shape[1], mel_audio
     
+    def wav_to_input_with_freq(self, wav_path, n=10):
+        clip_length, audio = self.wav_to_input(wav_path)
+        top_frequencies = self.get_top_frequencies(wav_path, n=n)
+
+        new_columns = np.tile(np.array(top_frequencies).reshape(1, -1), (clip_length, 1))
+
+        result = np.concatenate((audio, new_columns), axis=1)
+
+        return clip_length, result
+
+    def get_top_frequencies(self, wav_path, n=10):
+        amplitude, sampling_rate = librosa.load(wav_path, sr=None, mono=True)
+        stft = librosa.stft(amplitude, n_fft=self.frame_size_samples, hop_length=self.hop_size_samples)
+        
+        magnitudes = np.abs(stft)
+        frequencies = librosa.fft_frequencies(sr=sampling_rate, n_fft=self.frame_size_samples)
+
+        mean_magnitudes = np.mean(magnitudes, axis=1)
+        top_indices = np.argsort(mean_magnitudes)[-n:][::-1]
+
+        top_frequencies = frequencies[top_indices]
+
+        return top_frequencies
+
 
     def mel_to_input(self, mel_audio):
         number_of_frames = mel_audio.shape[1]
@@ -96,11 +122,11 @@ class AudioConverter:
         return self.mel_to_wav(mel_audio)
 
 
-audio_converter = AudioConverter()
-#clip_length, audio = audio_converter.wav_to_input("datasets/DCASE2025T2/Development/ToyCar/train/section_00_source_train_normal_0002_car_B1_spd_31V_mic_1.wav")
-clip_length, audio = audio_converter.wav_to_mel("datasets/DCASE2025T2/Development/ToyCar/train/section_00_source_train_normal_0002_car_B1_spd_31V_mic_1.wav")
-print(clip_length)
-
+# audio_converter = AudioConverter()
+# clip_length, audio = audio_converter.wav_to_input_with_freq("datasets/DCASE2025T2/Development/ToyCar/train/section_00_source_train_normal_0002_car_B1_spd_31V_mic_1.wav")
+# print(clip_length)
+# print(audio.shape)
+# print(audio)
 
 # output_path = f"reconstructions/RECONSTRUCTED_section_00_source_train_normal_0001_car_B1_spd_31V_mic_1.wav"
 # sf.write(output_path, audio, 16000)

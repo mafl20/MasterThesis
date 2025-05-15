@@ -1,8 +1,55 @@
 import torch.nn as nn
 
-class Autoencoder(nn.Module):
+class AF_Autoencoder(nn.Module):
     def __init__(self):
-        super(Autoencoder, self).__init__()
+        super(AF_Autoencoder, self).__init__()
+        #> Encoder
+        self.encoder = nn.Sequential(
+            nn.Linear(650, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Linear(128, 8),
+            nn.BatchNorm1d(8),
+            nn.ReLU(),
+        )
+
+        #> Decoder
+        self.decoder = nn.Sequential(
+            nn.Linear(8, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Linear(128, 650),
+        )
+
+    def forward(self, x):
+        encoded = self.encoder(x)
+        decoded = self.decoder(encoded)
+
+        return decoded
+
+
+
+class BaselineAutoencoder(nn.Module):
+    def __init__(self):
+        super(BaselineAutoencoder, self).__init__()
         #> Encoder
         self.encoder = nn.Sequential(
             nn.Linear(640, 128), #input layer (640 features) to hidden layer (128 features)

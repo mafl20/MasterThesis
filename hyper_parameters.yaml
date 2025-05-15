@@ -11,11 +11,11 @@ acoustic_features:
 dataset_parameters:
   train_data_inclusion_string: 'train'
   test_data_inclusion_string: 'test'
-  train_pct: .5
-  test_pct: .5
+  train_pct: 1
+  test_pct: 1
 
 training_parameters:
   batch_size: 256
-  epochs: 20
+  epochs: 100
   learning_rate: 0.001
   shuffle: True
