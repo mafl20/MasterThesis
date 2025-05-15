@@ -7,7 +7,7 @@ from tqdm import tqdm
 from audio_converter import AudioConverter
 
 class DataBundler:
-    def __init__(self, root_path="datasets/DCASE2025T2/Development"):
+    def __init__(self, root_path="datasets/DCASE2025T2"):
         print("\nData Loader Here!")
         self.root_path = root_path
 

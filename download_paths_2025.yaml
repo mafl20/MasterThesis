@@ -7,3 +7,12 @@ DCASE2025T2:
     - https://zenodo.org/records/15097779/files/dev_gearbox.zip
     - https://zenodo.org/records/15097779/files/dev_slider.zip
     - https://zenodo.org/records/15097779/files/dev_valve.zip
+  Additional:
+    - https://zenodo.org/records/15392814/files/eval_data_ToyRCCar_train.zip
+    - https://zenodo.org/records/15392814/files/eval_data_ToyPet_train.zip
+    - https://zenodo.org/records/15392814/files/eval_data_HomeCamera_train.zip
+    - https://zenodo.org/records/15392814/files/eval_data_AutoTrash_train.zip
+    - https://zenodo.org/records/15392814/files/eval_data_Polisher_train.zip
+    - https://zenodo.org/records/15392814/files/eval_data_ScrewFeeder_train.zip
+    - https://zenodo.org/records/15392814/files/eval_data_BandSealer_train.zip
+    - https://zenodo.org/records/15392814/files/eval_data_CoffeeGrinder_train.zip
