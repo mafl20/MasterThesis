@@ -13,6 +13,7 @@ class AudioConverter:
 
         #> setup general acoustic features
         self.acoustic_features = self.hyper_parameters['acoustic_features']
+        self.number_of_frames_to_concatenate = self.acoustic_features['number_of_frames_to_concatenate']
         self.frame_size_seconds = self.acoustic_features['frame_size_seconds']
         self.frame_size_samples = self.acoustic_features['frame_size_samples']
         self.hop_size_samples = self.acoustic_features['hop_size_samples']
@@ -82,26 +83,25 @@ class AudioConverter:
     def mel_to_input(self, mel_audio):
         number_of_frames = mel_audio.shape[1]
 
-        trimmed_frames = number_of_frames - (number_of_frames % 5) #376 - (376 % 5) => 376 - 1 = 375
+        trimmed_frames = number_of_frames - (number_of_frames % self.number_of_frames_to_concatenate) #376 - (376 % 5) => 376 - 1 = 375
         # print(f"trimmed_frames: {trimmed_frames}")
         mel_audio = mel_audio[:, :trimmed_frames] #trim the mel audio to be divisible by 5
 
-        concatenated_mel_audio = mel_audio.reshape(mel_audio.shape[0], mel_audio.shape[1] // 5, 5) #reshape to (number_of_mels, number_of_frames // 5, 5) which is (128, 75, 5)
+        concatenated_mel_audio = mel_audio.reshape(mel_audio.shape[0], mel_audio.shape[1] // self.number_of_frames_to_concatenate, self.number_of_frames_to_concatenate) #reshape to (number_of_mels, number_of_frames // 5, 5) which is (128, 75, 5)
         concatenated_mel_audio = concatenated_mel_audio.transpose(1, 0, 2) #transpose to (number_of_frames // 5, number_of_mels, 5) which is (75, 128, 5)
         concatenated_mel_audio = concatenated_mel_audio.reshape(concatenated_mel_audio.shape[0], -1) #reshape to (number_of_frames // 5, number_of_mels * 5) which is (75, 640)
 
         return concatenated_mel_audio.shape[0], concatenated_mel_audio
-    
-
-    def wav_to_input(self, wav_path):
-        lengths, mel_audio = self.wav_to_mel(wav_path)
-        return self.mel_to_input(mel_audio)
         
     
-    def output_to_mel(self, output, number_of_mels=128, number_of_frames_to_concatenate=5):
-        output_reshaped = output.reshape(output.shape[0], number_of_mels, number_of_frames_to_concatenate)
+    def output_to_mel(self, output, number_of_mels=128):
+        # output_reshaped = output.reshape(output.shape[0], number_of_mels, self.number_of_frames_to_concatenate)
+        # output_reshaped = output_reshaped.transpose(1, 0, 2)
+        # output_reshaped = output_reshaped.reshape(output_reshaped.shape[0], -1)
+
+        output_reshaped = output.reshape(output.shape[0], number_of_mels, self.number_of_frames_to_concatenate)
         output_reshaped = output_reshaped.transpose(1, 0, 2)
-        output_reshaped = output_reshaped.reshape(output_reshaped.shape[0], -1)
+        output_reshaped = output_reshaped.reshape(number_of_mels, -1)
 
         return output_reshaped
 
@@ -111,12 +111,18 @@ class AudioConverter:
         mel_to_linear = librosa.feature.inverse.mel_to_audio(
             linear_audio,
             sr=16000,
-            n_fft=1024,
-            hop_length=512
+            n_fft=self.frame_size_samples,
+            hop_length=self.hop_size_samples
         )
 
         return mel_to_linear
     
+    
+    def wav_to_input(self, wav_path):
+        lengths, mel_audio = self.wav_to_mel(wav_path)
+        return self.mel_to_input(mel_audio)
+    
+
     def output_to_wav(self, output):
         lengths, mel_audio = self.output_to_mel(output)
         return self.mel_to_wav(mel_audio)
@@ -131,3 +137,9 @@ class AudioConverter:
 # output_path = f"reconstructions/RECONSTRUCTED_section_00_source_train_normal_0001_car_B1_spd_31V_mic_1.wav"
 # sf.write(output_path, audio, 16000)
 # reconstructed_audio_data, sampling_rate = librosa.load(output_path, sr=None)
+
+# audio_converter = AudioConverter()
+# clip_length, spectrogram = audio_converter.wav_to_mel("datasets/DCASE2025T2/Development/ToyCar/train/section_00_source_train_normal_0001_car_B1_spd_31V_mic_1.wav")
+# print(f"Clip length: {clip_length}")
+# print(f"Spectrogram shape: {spectrogram.shape}")
+# print(f"Spectrogram: {spectrogram}")

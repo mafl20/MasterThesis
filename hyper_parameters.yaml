@@ -9,8 +9,8 @@ acoustic_features:
   hop_size_samples: 512
 
 dataset_parameters:
-  train_data_inclusion_string: 'train'
-  test_data_inclusion_string: 'test'
+  train_data_inclusion_string: 'ToyCar\train'
+  test_data_inclusion_string: 'ToyCar\test'
   train_pct: 1
   test_pct: 1
 

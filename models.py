@@ -5,38 +5,38 @@ class AF_Autoencoder(nn.Module):
         super(AF_Autoencoder, self).__init__()
         #> Encoder
         self.encoder = nn.Sequential(
-            nn.Linear(650, 128),
-            nn.BatchNorm1d(128),
+            nn.Linear(640, 320),
+            nn.BatchNorm1d(320),
             nn.ReLU(),
-            nn.Linear(128, 128),
-            nn.BatchNorm1d(128),
+            nn.Linear(320, 160),
+            nn.BatchNorm1d(160),
             nn.ReLU(),
-            nn.Linear(128, 128),
-            nn.BatchNorm1d(128),
+            nn.Linear(160, 80),
+            nn.BatchNorm1d(80),
             nn.ReLU(),
-            nn.Linear(128, 128),
-            nn.BatchNorm1d(128),
+            nn.Linear(80, 40),
+            nn.BatchNorm1d(40),
             nn.ReLU(),
-            nn.Linear(128, 8),
-            nn.BatchNorm1d(8),
+            nn.Linear(40, 20),
+            nn.BatchNorm1d(20),
             nn.ReLU(),
         )
 
         #> Decoder
         self.decoder = nn.Sequential(
-            nn.Linear(8, 128),
-            nn.BatchNorm1d(128),
+            nn.Linear(20, 40),
+            nn.BatchNorm1d(40),
             nn.ReLU(),
-            nn.Linear(128, 128),
-            nn.BatchNorm1d(128),
+            nn.Linear(40, 80),
+            nn.BatchNorm1d(80),
             nn.ReLU(),
-            nn.Linear(128, 128),
-            nn.BatchNorm1d(128),
+            nn.Linear(80, 160),
+            nn.BatchNorm1d(160),
             nn.ReLU(),
-            nn.Linear(128, 128),
-            nn.BatchNorm1d(128),
+            nn.Linear(160, 320),
+            nn.BatchNorm1d(320),
             nn.ReLU(),
-            nn.Linear(128, 650),
+            nn.Linear(320, 640),
         )
 
     def forward(self, x):
