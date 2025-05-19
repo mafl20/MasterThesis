@@ -12,20 +12,31 @@ class DataBundler:
         self.root_path = root_path
 
 
-    def load_dataset(self, inclusion_string=None, percentage=1.0, shuffle=True, as_input=True, audio_type="all"):
+    def load_dataset(self, inclusion_string=None, include_supplemental=True, percentage=1.0, shuffle=True, as_input=True, audio_type="all"):
         audio_files = []
+        # for directory_path, _, filenames in os.walk(self.root_path):
+        #     if inclusion_string is None or inclusion_string in directory_path:
+        #         if include_supplemental == False and "supplemental" in directory_path:
+        #             continue
+
         for directory_path, _, filenames in os.walk(self.root_path):
-            if inclusion_string is None or inclusion_string in directory_path:
+            if include_supplemental and "supplemental" in directory_path:
                 files = glob.glob(os.path.join(directory_path, '*.wav'))
+            elif inclusion_string is None or inclusion_string in directory_path:
+                files = glob.glob(os.path.join(directory_path, '*.wav'))
+            else:
+                continue
                 
-                if audio_type == "normal":
-                    filtered_files = [file for file in files if "normal" in os.path.basename(file)]
-                elif audio_type == "anomaly":
-                    filtered_files = [file for file in files if "anomaly" in os.path.basename(file)]
-                else:
-                    filtered_files = files
-                
-                audio_files.extend(filtered_files)
+            files = glob.glob(os.path.join(directory_path, '*.wav'))
+            
+            if audio_type == "normal":
+                filtered_files = [file for file in files if "normal" in os.path.basename(file)]
+            elif audio_type == "anomaly":
+                filtered_files = [file for file in files if "anomaly" in os.path.basename(file)]
+            else:
+                filtered_files = files
+            
+            audio_files.extend(filtered_files)
 
         if shuffle:
             random.shuffle(audio_files)  # Shuffle the list if `shuffle` is True
