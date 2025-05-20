@@ -76,7 +76,7 @@ class AudioConverter:
 
     def mel_to_input(self, mel_audio):
         trimmed_audio = self.trim(mel_audio, mel_audio.shape[1])
-        concatenated_audio = self.concatenate(mel_audio)
+        concatenated_audio = self.concatenate(trimmed_audio)
         return concatenated_audio.shape[0], concatenated_audio
         
 
