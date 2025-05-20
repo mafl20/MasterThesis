@@ -75,18 +75,24 @@ class AudioConverter:
 
 
     def mel_to_input(self, mel_audio):
-        number_of_frames = mel_audio.shape[1]
-
-        trimmed_frames = number_of_frames - (number_of_frames % self.number_of_frames_to_concatenate) #e.g. 376 - (376 % 5) => 376 - 1 = 375
-        mel_audio = mel_audio[:, :trimmed_frames] #trim the mel audio to be divisible by 5
-
-        concatenated_mel_audio = mel_audio.reshape(mel_audio.shape[0], mel_audio.shape[1] // self.number_of_frames_to_concatenate, self.number_of_frames_to_concatenate) #reshape to (number_of_mels, number_of_frames // 5, 5) which is (128, 75, 5)
-        concatenated_mel_audio = concatenated_mel_audio.transpose(1, 0, 2) #transpose to (number_of_frames // 5, number_of_mels, 5) which is (75, 128, 5)
-        concatenated_mel_audio = concatenated_mel_audio.reshape(concatenated_mel_audio.shape[0], -1) #reshape to (number_of_frames // 5, number_of_mels * 5) which is (75, 640)
-
-        return concatenated_mel_audio.shape[0], concatenated_mel_audio
+        trimmed_audio = self.trim(mel_audio, mel_audio.shape[1])
+        concatenated_audio = self.concatenate(mel_audio)
+        return concatenated_audio.shape[0], concatenated_audio
         
-    
+
+    def trim(self, mel_audio, number_of_frames):
+        trimmed_frames = number_of_frames - (number_of_frames % self.number_of_frames_to_concatenate) #e.g. 376 - (376 % 5) => 376 - 1 = 375
+        trimmed_audio = mel_audio[:, :trimmed_frames] #trim the mel audio to be divisible by 5
+        return trimmed_audio
+
+
+    def concatenate(self, mel_audio):
+        concatenated_audio = mel_audio.reshape(mel_audio.shape[0], mel_audio.shape[1] // self.number_of_frames_to_concatenate, self.number_of_frames_to_concatenate) #reshape to (number_of_mels, number_of_frames // 5, 5) which is (128, 75, 5)
+        concatenated_audio = concatenated_audio.transpose(1, 0, 2) #transpose to (number_of_frames // 5, number_of_mels, 5) which is (75, 128, 5)
+        concatenated_audio = concatenated_audio.reshape(concatenated_audio.shape[0], -1) #reshape to (number_of_frames // 5, number_of_mels * 5) which is (75, 640)
+        return concatenated_audio
+
+
     def output_to_mel(self, output, number_of_mels=128):
         output_reshaped = output.reshape(output.shape[0], number_of_mels, self.number_of_frames_to_concatenate)
         output_reshaped = output_reshaped.transpose(1, 0, 2)
