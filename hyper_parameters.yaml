@@ -10,12 +10,12 @@ acoustic_features:
 
 dataset_parameters:
   train_data_inclusion_string: 'train'
-  test_data_inclusion_string: 'ToyTrain\test'
-  train_pct: 1
-  test_pct: 1
+  test_data_inclusion_string: 'test'
+  train_pct: .1
+  test_pct: .1
 
 training_parameters:
   batch_size: 256
-  epochs: 50
+  epochs: 20
   learning_rate: 0.001
   shuffle: True
