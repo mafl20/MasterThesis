@@ -9,35 +9,37 @@ class Evaluator:
         pass
 
     def reconstruct_clips(self, model, input_data, clip_lengths, device):
-        output, mse = self.evaluate_model()
+        output, mse = self.extract_features(model, input_data, device)
         output_features = np.vstack(output)
         clips = self.bundle(output_features, clip_lengths)
 
         return clips
-    
-    def evaluate_model(self, model, input_data, device):
+
+
+    def extract_features(self, model, input_data, device):
         output_features = []
         mse_list = []
 
         model.eval()
         total_mse = 0.0
-        total_samples = 0
+        number_of_samples = 0
 
         with torch.no_grad():
             for data in input_data:
                 input = data.to(device)
                 output = model(input)
 
-                output_features.append(output.cpu().numpy())  # Store the reconstruction for later use
+                output_features.append(output.cpu().numpy())
 
                 mse = mse_loss(output, input, reduction='sum').item()
                 mse_list.append(mse)
                 total_mse += mse
                 total_samples += input.numel()
         
-        average_mse = total_mse / total_samples
+        average_mse = total_mse / number_of_samples
 
         return output_features, average_mse
+
 
     def bundle(self, data, clip_lengths):
         clips = []
@@ -51,10 +53,12 @@ class Evaluator:
 
         return clips
     
+
     def reconstruction_error(self, original, reconstructed):
         recon_err_per_clip = self.mse(original, reconstructed)
 
         return recon_err_per_clip
+
 
     def mse(self, original, reconstructed):
         error_array = []
@@ -77,25 +81,7 @@ class Evaluator:
         anomaly_threshold = gamma.ppf(0.9, shape, loc=location, scale=scale)
 
         return gamma_pdf, anomaly_threshold
-    
-    def confusion_matrix(self):
-        pass
 
-    def predictions(self, values, threshold):
+
+    def make_predictions(self, values, threshold):
         return (values > threshold).astype(int)
-
-    def roc_auc(self):
-        pass
-
-    def performance_metrics(self):
-        pass
-
-    def compute_metrics(self):
-        pass
-
-    def plot_metrics(self):
-        pass
-
-    def save_results(self):
-        pass
-

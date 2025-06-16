@@ -88,6 +88,7 @@ class BaselineAutoencoder(nn.Module):
 
     def forward(self, x):
         encoded = self.encoder(x)
+        
         decoded = self.decoder(encoded)
 
         #print(f"Input vector: {x}")
